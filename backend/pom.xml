@@ -18,6 +18,27 @@
     </properties>
 
     <dependencies>
+        <!-- Jakarta EE CDI -->
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>4.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Jakarta Persistence API -->
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Jakarta Inject -->
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
@@ -29,6 +50,12 @@
             <artifactId>jakarta.json.bind-api</artifactId>
             <version>3.0.1</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- Yasson JSON-B Implementation -->
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>yasson</artifactId>
+            <version>3.0.4</version>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>

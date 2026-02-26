@@ -1,9 +1,28 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.2">
-    <persistence-unit name="default">
-
+    <persistence-unit name="shopone-pu" transaction-type="JTA">
+        <provider>org.hibernate.orm.jpa.HibernatePersistenceProvider</provider>
+        
+        <!-- JNDI Datasource configured in WildFly -->
+        <jta-data-source>java:/shopone</jta-data-source>
+        
+        <properties>
+            <!-- Hibernate configuration -->
+            <property name="jakarta.persistence.hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="jakarta.persistence.hibernate.hbm2ddl.auto" value="update"/>
+            <property name="jakarta.persistence.show_sql" value="true"/>
+            <property name="jakarta.persistence.format_sql" value="true"/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            
+            <!-- Hibernate second-level cache -->
+            <property name="hibernate.cache.use_second_level_cache" value="false"/>
+            <property name="hibernate.cache.use_query_cache" value="false"/>
+            
+            <!-- Transaction management -->
+            <property name="hibernate.transaction.jta.platform" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
+        </properties>
     </persistence-unit>
 </persistence>

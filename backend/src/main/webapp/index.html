@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopOne API</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .method {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        .get { background: #61affe; color: white; }
+        .post { background: #49cc90; color: white; }
+        .put { background: #fca130; color: white; }
+        .delete { background: #f93e3e; color: white; }
+        .patch { background: #50e3c2; color: white; }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .swagger-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .swagger-link:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 ShopOne API</h1>
+        <p>Welcome to the ShopOne E-Commerce Backend API.</p>
+        
+        <h2>Authentication Endpoints</h2>
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/auth/register</code> - Register new user
+        </div>
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/auth/login</code> - Login user
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/auth/validate</code> - Validate token
+        </div>
+        
+        <h2>User Endpoints</h2>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/users</code> - Get all users
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/users/{id}</code> - Get user by ID
+        </div>
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/users</code> - Create user
+        </div>
+        <div class="endpoint">
+            <span class="method put">PUT</span>
+            <code>/api/users/{id}</code> - Update user
+        </div>
+        
+        <h2>Product Endpoints</h2>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/products</code> - Get all products
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/products?active=true</code> - Get active products
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/products?search=name</code> - Search products
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/products/{id}</code> - Get product by ID
+        </div>
+        
+        <h2>Category Endpoints</h2>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/categories</code> - Get all categories
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/categories/root</code> - Get root categories
+        </div>
+        
+        <h2>Order Endpoints</h2>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/orders</code> - Get all orders
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/orders?userId={id}</code> - Get user orders
+        </div>
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/orders/{id}</code> - Get order by ID
+        </div>
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/orders?userId={id}</code> - Create order
+        </div>
+        
+        <a href="/api/openapi.json" class="swagger-link">📚 OpenAPI/Swagger Documentation</a>
+    </div>
+</body>
+</html>
