@@ -1,6 +1,6 @@
 // User types
 export interface User {
-  id: number;
+  id: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -9,32 +9,35 @@ export interface User {
 
 // Category types
 export interface Category {
-  id: number;
+  id: string;
   name: string;
   description?: string;
+  parentCategory?: Category;
 }
 
 // Product types
 export interface Product {
-  id: number;
+  id: string;
+  sku: string;
   name: string;
   description: string;
   price: number;
   stock: number;
+  active: boolean;
   imageUrl?: string;
   category?: Category;
 }
 
 // Order types
 export interface OrderItem {
-  id: number;
+  id: string;
   product: Product;
   quantity: number;
   price: number;
 }
 
 export interface Order {
-  id: number;
+  id: string;
   user: User;
   items: OrderItem[];
   totalAmount: number;

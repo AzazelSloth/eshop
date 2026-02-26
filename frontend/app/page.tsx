@@ -2,56 +2,12 @@
 
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
-import { Product, Category } from '@/lib/types';
-
-// Mock data for demonstration - in production, this would come from the API
-const featuredProducts: Product[] = [
-  {
-    id: 1,
-    name: 'Premium Wireless Headphones',
-    description: 'High-quality wireless headphones with noise cancellation',
-    price: 299.99,
-    stock: 15,
-    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
-    category: { id: 1, name: 'Electronics' },
-  },
-  {
-    id: 2,
-    name: 'Smart Watch Pro',
-    description: 'Advanced smartwatch with health monitoring features',
-    price: 449.99,
-    stock: 20,
-    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
-    category: { id: 1, name: 'Electronics' },
-  },
-  {
-    id: 3,
-    name: 'Designer Sunglasses',
-    description: 'Stylish sunglasses with UV protection',
-    price: 159.99,
-    stock: 30,
-    imageUrl: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400',
-    category: { id: 2, name: 'Fashion' },
-  },
-  {
-    id: 4,
-    name: 'Leather Wallet',
-    description: 'Genuine leather wallet with multiple compartments',
-    price: 89.99,
-    stock: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=400',
-    category: { id: 2, name: 'Fashion' },
-  },
-];
-
-const categories: Category[] = [
-  { id: 1, name: 'Electronics', description: 'Latest gadgets and devices' },
-  { id: 2, name: 'Fashion', description: 'Trendy clothing and accessories' },
-  { id: 3, name: 'Home & Garden', description: 'Everything for your home' },
-  { id: 4, name: 'Sports', description: 'Sports equipment and gear' },
-];
+import { useProducts, useCategories } from '@/lib/hooks';
 
 export default function Home() {
+  const { products: featuredProducts, loading: productsLoading, error: productsError } = useProducts({ active: true });
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories(true);
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -86,18 +42,33 @@ export default function Home() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="mb-8 text-3xl font-bold">Shop by Category</h2>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/categories/${category.id}`}
-                className="group relative overflow-hidden rounded-lg border p-6 transition-shadow hover:shadow-lg"
-              >
-                <h3 className="text-lg font-semibold">{category.name}</h3>
-                <p className="mt-2 text-sm text-gray-600">{category.description}</p>
-              </Link>
-            ))}
-          </div>
+          {categoriesLoading ? (
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="animate-pulse rounded-lg border p-6">
+                  <div className="h-6 w-24 rounded bg-gray-200"></div>
+                  <div className="mt-2 h-4 w-32 rounded bg-gray-200"></div>
+                </div>
+              ))}
+            </div>
+          ) : categoriesError ? (
+            <p className="text-red-500">Failed to load categories</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/categories/${category.id}`}
+                  className="group relative overflow-hidden rounded-lg border p-6 transition-shadow hover:shadow-lg"
+                >
+                  <h3 className="text-lg font-semibold">{category.name}</h3>
+                  {category.description && (
+                    <p className="mt-2 text-sm text-gray-600">{category.description}</p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -113,11 +84,31 @@ export default function Home() {
               View All Products →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {productsLoading ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="animate-pulse overflow-hidden rounded-lg border bg-white">
+                  <div className="aspect-square bg-gray-200"></div>
+                  <div className="p-4">
+                    <div className="h-4 w-16 rounded bg-gray-200"></div>
+                    <div className="mt-2 h-6 w-48 rounded bg-gray-200"></div>
+                    <div className="mt-2 h-4 w-full rounded bg-gray-200"></div>
+                    <div className="mt-4 h-8 w-24 rounded bg-gray-200"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : productsError ? (
+            <p className="text-red-500">Failed to load products</p>
+          ) : featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredProducts.slice(0, 4).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600">No products available</p>
+          )}
         </div>
       </section>
 

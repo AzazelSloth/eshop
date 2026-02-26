@@ -5,60 +5,44 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useCart } from '@/lib/cart-context';
-import { Product } from '@/lib/types';
-
-// Mock data - in production, this would come from the API
-const productsData: Record<number, Product> = {
-  1: {
-    id: 1,
-    name: 'Premium Wireless Headphones',
-    description: 'Experience crystal-clear audio with our premium wireless headphones. Featuring advanced noise cancellation technology, 30-hour battery life, and premium comfort for extended listening sessions. The intuitive touch controls allow you to manage your music, calls, and voice assistant with ease.',
-    price: 299.99,
-    stock: 15,
-    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600',
-    category: { id: 1, name: 'Electronics' },
-  },
-  2: {
-    id: 2,
-    name: 'Smart Watch Pro',
-    description: 'Stay connected and healthy with our Smart Watch Pro. Features include heart rate monitoring, sleep tracking, GPS, water resistance, and a stunning AMOLED display. Compatible with both iOS and Android devices.',
-    price: 449.99,
-    stock: 20,
-    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600',
-    category: { id: 1, name: 'Electronics' },
-  },
-  3: {
-    id: 3,
-    name: 'Designer Sunglasses',
-    description: 'Make a statement with these designer sunglasses. Premium UV400 protection, scratch-resistant lenses, and a lightweight frame for all-day comfort. Perfect for any occasion.',
-    price: 159.99,
-    stock: 30,
-    imageUrl: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600',
-    category: { id: 2, name: 'Fashion' },
-  },
-  4: {
-    id: 4,
-    name: 'Leather Wallet',
-    description: 'Crafted from genuine leather, this wallet features multiple compartments for cards, cash, and ID. The RFID blocking technology keeps your information secure.',
-    price: 89.99,
-    stock: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=600',
-    category: { id: 2, name: 'Fashion' },
-  },
-};
+import { useProduct } from '@/lib/hooks';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   
-  const productId = Number(params.id);
-  const product = productsData[productId];
+  const productId = params.id as string;
+  const { product, loading, error } = useProduct(productId);
 
-  if (!product) {
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <nav className="mb-6 text-sm text-gray-600">
+          <Link href="/">Home</Link>
+          <span className="mx-2">/</span>
+          <Link href="/products">Products</Link>
+          <span className="mx-2">/</span>
+          <span>Loading...</span>
+        </nav>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div className="aspect-square animate-pulse rounded-lg bg-gray-200"></div>
+          <div>
+            <div className="h-4 w-16 animate-pulse rounded bg-gray-200"></div>
+            <div className="mt-2 h-8 w-64 animate-pulse rounded bg-gray-200"></div>
+            <div className="mt-4 h-8 w-32 animate-pulse rounded bg-gray-200"></div>
+            <div className="mt-6 h-20 w-full animate-pulse rounded bg-gray-200"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
     return (
       <div className="container mx-auto px-4 py-16">
         <h1 className="text-2xl font-bold">Product Not Found</h1>
+        <p className="mt-2 text-gray-600">{error || 'The product you are looking for does not exist.'}</p>
         <Link href="/products" className="mt-4 text-primary hover:underline">
           Back to Products
         </Link>
@@ -109,10 +93,10 @@ export default function ProductDetailPage() {
               </svg>
             </div>
           )}
-          {product.stock === 0 && (
+          {!product.active && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50">
               <span className="rounded-full bg-red-500 px-6 py-2 font-semibold text-white">
-                Out of Stock
+                Unavailable
               </span>
             </div>
           )}
@@ -138,7 +122,7 @@ export default function ProductDetailPage() {
             </p>
           </div>
 
-          {product.stock > 0 && (
+          {product.active && product.stock > 0 && (
             <div className="mt-8">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
