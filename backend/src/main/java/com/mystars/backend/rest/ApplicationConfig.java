@@ -22,10 +22,6 @@ public class ApplicationConfig extends Application {
         classes.add(CategoryResource.class);
         classes.add(OrderResource.class);
         
-        // Swagger/OpenAPI
-        classes.add(io.swagger.jaxrs.listing.ApiListingResource.class);
-        classes.add(io.swagger.jaxrs.listing.SwaggerSerializers.class);
-        
         return classes;
     }
 }
