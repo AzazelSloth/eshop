@@ -22,6 +22,9 @@ public class ApplicationConfig extends Application {
         classes.add(CategoryResource.class);
         classes.add(OrderResource.class);
         
+        // OpenAPI/Swagger - custom resource that generates spec dynamically
+        classes.add(OpenAPIResource.class);
+        
         return classes;
     }
 }

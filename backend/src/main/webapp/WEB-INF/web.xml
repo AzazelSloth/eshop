@@ -84,4 +84,14 @@
         <error-code>500</error-code>
         <location>/error/500.html</location>
     </error-page>
+
+    <!-- Jersey Servlet Configuration -->
+    <servlet>
+        <servlet-name>jakarta.ws.rs.core.Application</servlet-name>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jakarta.ws.rs.core.Application</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
 </web-app>

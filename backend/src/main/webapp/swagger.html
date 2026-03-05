@@ -5,34 +5,165 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShopOne API - Swagger UI</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.11.0/swagger-ui.css" />
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
     <style>
         body {
             margin: 0;
             padding: 0;
+            background-color: #f5f5f5;
+        }
+        .topbar {
+            background-color: #1a1a2e !important;
+        }
+        .topbar .download-url-wrapper {
+            display: none;
+        }
+        .info .title {
+            font-size: 2.5em !important;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .info .description {
+            font-size: 1.1em !important;
+            line-height: 1.6 !important;
+        }
+        .swagger-ui .opblock-tag {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+        }
+        .swagger-ui .opblock-tag:hover {
+            background-color: #e9ecef;
+        }
+        .swagger-ui .opblock {
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        .swagger-ui .btn.authorize {
+            background-color: #1a1a2e;
+            border-color: #1a1a2e;
+        }
+        .swagger-ui .btn.authorize:hover {
+            background-color: #16213e;
+            border-color: #16213e;
+        }
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a1a2e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            margin-top: 20px;
+            color: #666;
+            font-size: 1.1em;
         }
     </style>
 </head>
 <body>
-    <div id="swagger-ui"></div>
+    <div id="swagger-ui">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading API Documentation...</div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.11.0/swagger-ui-bundle.js" charset="UTF-8"></script>
     <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js" charset="UTF-8"></script>
     <script>
-        window.onload = function() {
-            const ui = SwaggerUIBundle({
-                url: "/api/openapi.json",
-                dom_id: '#swagger-ui',
-                deepLinking: true,
-                presets: [
-                    SwaggerUIBundle.presets.apis,
-                    SwaggerUIBundle.SwaggerUIStandalonePreset
-                ],
-                layout: "StandaloneLayout",
-                docExpansion: "list",
-                filter: true,
-                showExtensions: true,
-                showCommonExtensions: true
-            });
-            window.ui = ui;
+        window.onload = async function() {
+            // Get the base URL dynamically
+            const baseUrl = window.location.protocol + '//' + window.location.host;
+            const apiUrl = baseUrl + '/api/openapi';
+            
+            try {
+                // Try to fetch the OpenAPI spec
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch OpenAPI spec');
+                }
+                
+                const openApiSpec = await response.json();
+                
+                const ui = SwaggerUIBundle({
+                    spec: openApiSpec,
+                    url: apiUrl,
+                    dom_id: '#swagger-ui',
+                    deepLinking: true,
+                    presets: [
+                        SwaggerUIBundle.presets.apis,
+                        SwaggerUIBundle.SwaggerUIStandalonePreset
+                    ],
+                    layout: "StandaloneLayout",
+                    docExpansion: "list",
+                    filter: true,
+                    showExtensions: true,
+                    showCommonExtensions: true,
+                    persistAuthorization: true,
+                    tryItOutEnabled: true,
+                    supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch', 'options'],
+                    onFailure: function(error) {
+                        console.error('Swagger UI failed to load:', error);
+                        document.getElementById('swagger-ui').innerHTML = `
+                            <div class="loading-container" style="color: #dc3545;">
+                                <div style="font-size: 3em; margin-bottom: 20px;">⚠️</div>
+                                <div style="font-size: 1.2em; margin-bottom: 10px;">Failed to load API Documentation</div>
+                                <div style="color: #666;">Please ensure the backend is running and accessible.</div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                window.ui = ui;
+                
+                // Add authorization header for try-it-out requests
+                window.ui.authActions.authorize({
+                    bearerAuth: {
+                        name: "bearerAuth",
+                        schema: {
+                            type: "http",
+                            scheme: "bearer",
+                            bearerFormat: "JWT"
+                        },
+                        value: ""
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error loading OpenAPI spec:', error);
+                // Try with a fallback approach
+                const ui = SwaggerUIBundle({
+                    url: apiUrl,
+                    dom_id: '#swagger-ui',
+                    deepLinking: true,
+                    presets: [
+                        SwaggerUIBundle.presets.apis,
+                        SwaggerUIBundle.SwaggerUIStandalonePreset
+                    ],
+                    layout: "StandaloneLayout",
+                    docExpansion: "list",
+                    filter: true,
+                    showExtensions: true,
+                    showCommonExtensions: true
+                });
+                window.ui = ui;
+            }
         };
     </script>
 </body>

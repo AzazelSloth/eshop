@@ -3,11 +3,20 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.2">
-    <persistence-unit name="shopone-pu" transaction-type="JTA">
-        <provider>org.hibernate.orm.jpa.HibernatePersistenceProvider</provider>
+    <persistence-unit name="shopone-pu" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         
-        <!-- JNDI Datasource configured in WildFly -->
-        <jta-data-source>java:/shopone</jta-data-source>
+        <!-- For WildFly with JNDI datasource (uncomment for production with datasource configured) -->
+        <!-- <jta-data-source>java:/shopone</jta-data-source> -->
+        
+        <!-- Direct JDBC connection for development/testing -->
+        <non-jta-data-source>java:comp/env/jdbc/shopone</non-jta-data-source>
+        
+        <class>com.mystars.backend.entity.User</class>
+        <class>com.mystars.backend.entity.Product</class>
+        <class>com.mystars.backend.entity.Category</class>
+        <class>com.mystars.backend.entity.Order</class>
+        <class>com.mystars.backend.entity.OrderItem</class>
         
         <properties>
             <!-- Hibernate configuration -->
@@ -15,14 +24,16 @@
             <property name="jakarta.persistence.hibernate.hbm2ddl.auto" value="update"/>
             <property name="jakarta.persistence.show_sql" value="true"/>
             <property name="jakarta.persistence.format_sql" value="true"/>
+            
+            <!-- JDBC connection - update these for your environment -->
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/shopone"/>
+            <property name="jakarta.persistence.jdbc.user" value="postgres"/>
+            <property name="jakarta.persistence.jdbc.password" value="password"/>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             
             <!-- Hibernate second-level cache -->
             <property name="hibernate.cache.use_second_level_cache" value="false"/>
             <property name="hibernate.cache.use_query_cache" value="false"/>
-            
-            <!-- Transaction management -->
-            <property name="hibernate.transaction.jta.platform" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
         </properties>
     </persistence-unit>
 </persistence>

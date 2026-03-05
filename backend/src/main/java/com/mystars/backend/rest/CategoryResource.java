@@ -2,6 +2,13 @@ package com.mystars.backend.rest;
 
 import com.mystars.backend.entity.Category;
 import com.mystars.backend.service.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -15,13 +22,19 @@ import java.util.UUID;
 @Path("/api/categories")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Categories", description = "Product category management endpoints")
 public class CategoryResource {
     
     @Inject
     private CategoryService categoryService;
     
     @GET
-    public List<Category> findAll(@QueryParam("active") Boolean active) {
+    @Operation(summary = "Get all categories", description = "Retrieve all categories with optional filters")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Categories retrieved successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class)))
+    })
+    public List<Category> findAll(@Parameter(description = "Filter by active status") @QueryParam("active") Boolean active) {
         if (active != null && active) {
             return categoryService.findActive();
         }
@@ -30,13 +43,24 @@ public class CategoryResource {
     
     @GET
     @Path("/root")
+    @Operation(summary = "Get root categories", description = "Retrieve all root level categories (without parent)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Root categories retrieved successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class)))
+    })
     public List<Category> findRootCategories() {
         return categoryService.findRootCategories();
     }
     
     @GET
     @Path("/{id}")
-    public Response findById(@PathParam("id") UUID id) {
+    @Operation(summary = "Get category by ID", description = "Retrieve a category by its unique identifier")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Category found",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))),
+        @ApiResponse(responseCode = "404", description = "Category not found")
+    })
+    public Response findById(@Parameter(description = "Category UUID") @PathParam("id") UUID id) {
         return categoryService.findById(id)
             .map(category -> Response.ok(category).build())
             .orElse(Response.status(Response.Status.NOT_FOUND).build());
@@ -44,11 +68,22 @@ public class CategoryResource {
     
     @GET
     @Path("/{id}/children")
-    public List<Category> findSubcategories(@PathParam("id") UUID id) {
+    @Operation(summary = "Get subcategories", description = "Retrieve all subcategories of a category")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Subcategories retrieved successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class)))
+    })
+    public List<Category> findSubcategories(@Parameter(description = "Parent category UUID") @PathParam("id") UUID id) {
         return categoryService.findSubcategories(id);
     }
     
     @POST
+    @Operation(summary = "Create category", description = "Create a new category")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Category created successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
     public Response create(Category category) {
         try {
             Category created = categoryService.create(category);
@@ -61,7 +96,14 @@ public class CategoryResource {
     
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") UUID id, Category category) {
+    @Operation(summary = "Update category", description = "Update an existing category")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Category updated successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid request"),
+        @ApiResponse(responseCode = "404", description = "Category not found")
+    })
+    public Response update(@Parameter(description = "Category UUID") @PathParam("id") UUID id, Category category) {
         try {
             category.setId(id);
             Category updated = categoryService.update(category);
@@ -74,7 +116,12 @@ public class CategoryResource {
     
     @DELETE
     @Path("/{id}")
-    public Response delete(@PathParam("id") UUID id) {
+    @Operation(summary = "Delete category", description = "Delete a category permanently")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Category deleted successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    public Response delete(@Parameter(description = "Category UUID") @PathParam("id") UUID id) {
         try {
             categoryService.delete(id);
             return Response.noContent().build();

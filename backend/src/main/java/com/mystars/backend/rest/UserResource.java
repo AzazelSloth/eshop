@@ -2,6 +2,13 @@ package com.mystars.backend.rest;
 
 import com.mystars.backend.entity.User;
 import com.mystars.backend.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -15,19 +22,31 @@ import java.util.UUID;
 @Path("/api/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Users", description = "User management endpoints")
 public class UserResource {
     
     @Inject
     private UserService userService;
     
     @GET
+    @Operation(summary = "Get all users", description = "Retrieve all users")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Users retrieved successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
+    })
     public List<User> findAll() {
         return userService.findAll();
     }
     
     @GET
     @Path("/{id}")
-    public Response findById(@PathParam("id") UUID id) {
+    @Operation(summary = "Get user by ID", description = "Retrieve a user by its unique identifier")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User found",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+        @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public Response findById(@Parameter(description = "User UUID") @PathParam("id") UUID id) {
         return userService.findById(id)
             .map(user -> Response.ok(user).build())
             .orElse(Response.status(Response.Status.NOT_FOUND).build());
@@ -35,12 +54,23 @@ public class UserResource {
     
     @GET
     @Path("/role/{role}")
-    public List<User> findByRole(@PathParam("role") String role) {
+    @Operation(summary = "Get users by role", description = "Retrieve all users with a specific role")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Users retrieved successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
+    })
+    public List<User> findByRole(@Parameter(description = "User role") @PathParam("role") String role) {
         User.UserRole userRole = User.UserRole.valueOf(role.toUpperCase());
         return userService.findByRole(userRole);
     }
     
     @POST
+    @Operation(summary = "Create user", description = "Create a new user (admin only)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User created successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
     public Response create(User user) {
         try {
             User created = userService.create(user);
@@ -53,7 +83,14 @@ public class UserResource {
     
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") UUID id, User user) {
+    @Operation(summary = "Update user", description = "Update an existing user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User updated successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid request"),
+        @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public Response update(@Parameter(description = "User UUID") @PathParam("id") UUID id, User user) {
         try {
             user.setId(id);
             User updated = userService.update(user);
@@ -66,7 +103,12 @@ public class UserResource {
     
     @DELETE
     @Path("/{id}")
-    public Response delete(@PathParam("id") UUID id) {
+    @Operation(summary = "Delete user", description = "Delete a user permanently")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public Response delete(@Parameter(description = "User UUID") @PathParam("id") UUID id) {
         try {
             userService.delete(id);
             return Response.noContent().build();
@@ -78,7 +120,13 @@ public class UserResource {
     
     @PATCH
     @Path("/{id}/deactivate")
-    public Response deactivate(@PathParam("id") UUID id) {
+    @Operation(summary = "Deactivate user", description = "Deactivate a user account")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User deactivated successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+        @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public Response deactivate(@Parameter(description = "User UUID") @PathParam("id") UUID id) {
         try {
             User deactivated = userService.deactivate(id);
             return Response.ok(deactivated).build();
@@ -90,7 +138,13 @@ public class UserResource {
     
     @PATCH
     @Path("/{id}/activate")
-    public Response activate(@PathParam("id") UUID id) {
+    @Operation(summary = "Activate user", description = "Activate a user account")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User activated successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+        @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public Response activate(@Parameter(description = "User UUID") @PathParam("id") UUID id) {
         try {
             User activated = userService.activate(id);
             return Response.ok(activated).build();
