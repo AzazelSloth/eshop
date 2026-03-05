@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * REST controller for Order operations.
  */
-@Path("/api/orders")
+@Path("/orders")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class OrderResource {

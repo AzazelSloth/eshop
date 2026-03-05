@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * REST controller for Authentication operations.
  */
-@Path("/api/auth")
+@Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthResource {

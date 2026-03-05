@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * REST controller for Category operations.
  */
-@Path("/api/categories")
+@Path("/categories")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CategoryResource {

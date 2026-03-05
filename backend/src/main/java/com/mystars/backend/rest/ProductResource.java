@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * REST controller for Product operations.
  */
-@Path("/api/products")
+@Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProductResource {

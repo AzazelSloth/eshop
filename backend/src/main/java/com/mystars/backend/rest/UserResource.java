@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * REST controller for User operations.
  */
-@Path("/api/users")
+@Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
